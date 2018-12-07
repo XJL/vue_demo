@@ -7,12 +7,17 @@ Vue.use(VueRouter);
 // 页面引用
 import Home from '../pages/home/home.vue';
 
-
 const routes = [
+  {
+    path: '/',
+    redirect: '/home'
+  },
   {
     path: '/home',
     component: Home,
   }
 ];
+
 const router = new VueRouter({routes});
+
 export default router;
