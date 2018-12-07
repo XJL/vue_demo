@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>vue demo</title>
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <script src="../lib/jquery-3.3.1.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue@1.0.28/dist/vue.js"></script>
+    <!--<script src="https://cdn.jsdelivr.net/npm/vue@2.5.17/dist/vue.js"></script>-->
+
+    <script src="node_modules/vue-resource/dist/vue-resource.js"></script>
+
+    <style>
+        .box {
+            width: 100px;
+            height: 100px;
+            background-color: blue;
+            position: absolute;
+            left: 100px;
+            top: 0;
+        }
+        .box1 {
+            width: 100px;
+            height: 100px;
+            background-color: red;
+            position: absolute;
+            left: 100px;
+            top: 0;
+        }
+        .box2 {
+            width: 100px;
+            height: 100px;
+            background-color: gray;
+            position: absolute;
+            left: 100px;
+            top: 0;
+        }
+    </style>
+
+    <script >
+        // 自定义属性指令
+        Vue.directive("red", function () {
+            return this.el.style.background = 'red';
+        });
+
+        // 自定义属性指令
+        Vue.directive("drag", function () {
+            var el = this.el;
+            el.onmousedown = function (ev) {
+                var oldmove = document.onmousemove;
+                var oldup = document.onmouseup;
+                var ox = ev.clientX - el.offsetLeft;
+                var oy = ev.clientY - el.offsetTop;
+                document.onmousemove = function (ev) {
+                    el.style.left = ev.clientX - ox + 'px';
+                    el.style.top = ev.clientY - oy + 'px';
+                };
+                document.onmouseup = function () {
+                    document.onmousemove = oldmove;
+                    document.onmouseup = oldup;
+                }
+            };
+        });
+
+
+        // 自定义元素指令
+        Vue.elementDirective("drag", function () {
+            var el = this.el;
+            el.onmousedown = function (ev) {
+                var oldmove = document.onmousemove;
+                var oldup = document.onmouseup;
+                var ox = ev.clientX - el.offsetLeft;
+                var oy = ev.clientY - el.offsetTop;
+                document.onmousemove = function (ev) {
+                    el.style.left = ev.clientX - ox + 'px';
+                    el.style.top = ev.clientY - oy + 'px';
+                };
+                document.onmouseup = function () {
+                    document.onmousemove = oldmove;
+                    document.onmouseup = oldup;
+                }
+            };
+        });
+
+        // 自定义键盘信息
+        Vue.directive('on').keyCodes.ctrl = 17;
+
+        window.onload = function () {
+            // 自定义指令
+            new Vue({
+                el: '#box',
+                data: {
+                    a: 'msg',
+                },
+                methods: {
+                    show: function () {
+                        alert("你按了ctrl键");
+                    }
+                }
+            })
+        };
+    </script>
+</head>
+<body>
+<div class="container" id="box">
+    <div v-red>red</div>
+    <input type="text" @keydown.ctrl="show">
+    <div v-drag class="box">drag</div>
+    <div v-drag class="box1">drag1</div>
+    <div v-drag class="box2">drag2</div>
+    <MyDiv> </MyDiv>
+</div>
+</body>
+</html>

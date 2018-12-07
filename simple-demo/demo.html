@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>vue demo</title>
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <script src="../lib/jquery-3.3.1.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue@1.0.28/dist/vue.js"></script>
+    <!--<script src="https://cdn.jsdelivr.net/npm/vue@2.5.17/dist/vue.js"></script>-->
+
+    <script src="node_modules/vue-resource/dist/vue-resource.js"></script>
+
+    <script >
+
+        // 百度搜索例子
+        window.onload = function () {
+            new Vue({
+                el: '#box',
+                data: {
+                    myData: [],
+                    t1: "",
+                    t2: "",
+                    currentIndex: -1,
+
+                },
+                methods: {
+                    get: function ($event) {
+                        if($event.keyCode == 37 || $event.keyCode == 38 || $event.keyCode == 39 || $event.keyCode == 40) {
+                            return;
+                        }
+                        if($event.keyCode == 13) {
+                            window.open("https://www.baidu.com/s?wd=" + this.t1);
+                            this.t1 = "";
+                            this.t2 = "";
+                            this.currentIndex = -1;
+                        }
+
+                        this.t2 = this.t1;
+
+                        this.$http.jsonp(
+                            'https://sp0.baidu.com/5a1Fazu8AA54nxGko9WTAnF6hhy/su', {
+                                params: {
+                                    wd: this.t1
+                                },
+                                jsonp: 'cb'
+                            }
+                        ).then(function (res) {
+                            this.myData = res.data.s;
+                        }, function (err) {
+                            alert(JSON.stringify(err));
+                        });
+                    },
+                    up: function () {
+                        if(this.currentIndex == -1) {
+                            this.currentIndex = this.myData.length - 1;
+                        }
+                        else {
+                            this.currentIndex --;
+                        }
+
+                        if(this.currentIndex == -1) {
+                            this.t1 = this.t2;
+                        }
+                        else {
+                            this.t1 = this.myData[this.currentIndex];
+                        }
+                    },
+                    down: function () {
+                        if(this.currentIndex == this.myData.length - 1) {
+                            this.currentIndex = -1
+                            this.t1 = this.t2;
+                        }
+                        else {
+                            this.currentIndex ++;
+                            this.t1 = this.myData[this.currentIndex];
+                        }
+                    }
+                }
+            });
+        };
+    </script>
+</head>
+<body>
+    <div class="container" id="box">
+        <input type="text" v-model="t1" @keyup="get($event)" @keydown.up.prevent="up" @keydown.down.prevent="down">
+        <p>{{t2}}</p>
+        <ul>
+            <li v-for="value in myData" :class="{h4:$index==currentIndex}">
+                {{value}}
+            </li>
+        </ul>
+        <p v-show="myData.length == 0">暂无数据</p>
+    </div>
+</body>
+</html>

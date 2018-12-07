@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>vue demo</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <script src="../lib/jquery-3.3.1.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    <script src="../bower_components/vue/dist/vue.js"></script>
+
+    <script >
+        //  组件
+        window.onload = function () {
+
+            var vm = new Vue({
+                el: '#box',
+                data: {
+                    a: 'aaa',
+                },
+                methods: {
+
+                },
+                components: {
+                    'aaa': {
+                        template: '#aaa'
+                    }
+                }
+            });
+
+        };
+    </script>
+</head>
+<body>
+<div class="container" id="box">
+    <aaa>
+        <ul slot="ul-slot">
+            <li>1</li>
+            <li>2</li>
+            <li>3</li>
+        </ul>
+        <ol slot="ol-slot">
+            <li>1</li>
+            <li>2</li>
+            <li>3</li>
+        </ol>
+    </aaa>
+
+    <template id="aaa">
+        <h1>xxxx</h1>
+        <slot name="ul-slot">默认情况</slot>
+        <slot name="ol-slot">默认情况</slot>
+        <h2>vue</h2>
+    </template>
+</div>
+</body>
+</html>
