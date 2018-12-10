@@ -6,7 +6,7 @@
 
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-    <script src="../lib/jquery-3.3.1.js"></script>
+    <script src="../../lib/jquery-3.3.1.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
 
     <script src="https://cdn.jsdelivr.net/npm/vue@1.0.28/dist/vue.js"></script>
@@ -16,43 +16,53 @@
 
     <script >
 
-        //  监视
+        // 自定义过滤器
+        Vue.filter("toDouble", function (num, a, b) {
+            return num < 10 ? '0'+num : num;
+        });
+
+        // 自定义双向过滤器
+        Vue.filter("filterHtml",{
+            read: function (a) {
+                return a + 1
+            },
+            write: function (b) {
+                return b;
+            }
+        });
         window.onload = function () {
-            // 自定义指令
             var vm = new Vue({
                 el: '#box',
                 data: {
-                    a: 'msg1',
-                    b: 'msg2',
-                    c: {a: 1, b: 2},
-                },
-                methods: {
-
+                    text: "",
+                    arr: ['width', 'height', 'background', 'color'],
+                    num: 9,
                 }
             });
 
-            // 浅度监视
-            vm.$watch('a', function (a) {
-                this.b = a+1;
-            });
-
-            // 深度监视
-            vm.$watch('c', function (c) {
-                alert(c);
-            }, {deep: true});
-
-            document.onclick = function () {
-                vm.a = 1;
-                vm.c.a = 2;
-            };
         };
     </script>
 </head>
 <body>
 <div class="container" id="box">
-    {{a}}
-    <br>
-    {{b}}
+    <input type="text" v-model="text | filterHtml">
+    {{text}}
+
+    <ul>
+        <li v-for="val in arr | limitBy 2">
+            {{val}}
+        </li>
+        <hr>
+        <li v-for="val in arr | filterBy 'w'">
+            {{val}}
+        </li>
+        <hr>
+        <li v-for="val in arr | orderBy text">
+            {{val}}
+        </li>
+        <hr>
+       {{num | toDouble 1 2}}
+    </ul>
 </div>
 </body>
 </html>

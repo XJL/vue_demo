@@ -2,6 +2,7 @@
  * 产品模块
  */
 import Vue from 'vue';
+import R from '../utils/request';
 
 export const PRODUCT_GET = "PRODUCT_GET"; // 查询产品信息
 
@@ -13,7 +14,6 @@ export default {
   },
   mutations: {
     [PRODUCT_GET]: (state, payload) => {
-      //... 查询交互
       Object.assign(state, {
         id: 1,
         name: '稳盈',

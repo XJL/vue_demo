@@ -3,7 +3,7 @@ import App from './App.vue'
 
 
 // 自定义方法一
-import Loading from './components/loading';
+import Loading from './components/loading/index';
 Vue.use(Loading);
 
 // 自定义方法二

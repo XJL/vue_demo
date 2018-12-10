@@ -11,7 +11,7 @@
           return {
             title: "首页"
           }
-        }
+        },
     }
 </script>
 

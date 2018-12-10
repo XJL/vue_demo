@@ -1,10 +1,26 @@
 <template>
-    <div>请先登陆</div>
+  <div>
+    <input type="text" v-model="accName">
+    <input type="text" v-model="pwd">
+    <input type="button" value="登录" @click="signin({accName: accName, pwd: pwd})">
+  </div>
 </template>
 
 <script>
+    import {mapActions} from 'vuex';
+
     export default {
-        // name: "login"
+      data: function () {
+        return {
+          accName: "",
+          pwd: ""
+        }
+      },
+      methods: {
+        ...mapActions({
+          signin: "signin"
+        })
+      }
     }
 </script>
 
