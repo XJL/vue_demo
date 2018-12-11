@@ -11,6 +11,7 @@ Vue.use(VueRouter);
 
 const router = new VueRouter({routes});
 
+// 跳转拦截器
 router.beforeEach((to, from, next) => {
   const meta = to.meta;
   const {auth = true} = meta;

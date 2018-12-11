@@ -7,8 +7,6 @@
 </template>
 
 <script>
-    import {mapActions} from 'vuex';
-
     export default {
       data: function () {
         return {
@@ -17,9 +15,11 @@
         }
       },
       methods: {
-        ...mapActions({
-          signin: "signin"
-        })
+        signin({accName, pwd}) {
+          this.$store.dispatch("signin", {accName, pwd})
+            .then(()=>{this.$router.push({path: '/home'})})
+            .catch((error)=>alert(error.message));
+        },
       }
     }
 </script>
