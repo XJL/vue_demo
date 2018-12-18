@@ -1,6 +1,6 @@
-# vue-template-webpack
+# sell
 
-> A Vue.js project
+> sell
 
 ## Build Setup
 

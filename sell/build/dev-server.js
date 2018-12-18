@@ -14,8 +14,22 @@ var port = process.env.PORT || config.dev.port
 var proxyTable = config.dev.proxyTable
 
 var app = express()
-var compiler = webpack(webpackConfig)
 
+
+// mock数据
+var appData = require("../data.json");
+var goods = appData.goods;
+var apiRoutes = express.Router();
+apiRoutes.get('/goods', function (req, res) {
+  res.json({
+    errno: 0,
+    data: goods
+  })
+});
+app.use("/api", apiRoutes);
+
+
+var compiler = webpack(webpackConfig)
 var devMiddleware = require('webpack-dev-middleware')(compiler, {
   publicPath: webpackConfig.output.publicPath,
   stats: {
