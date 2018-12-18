@@ -19,11 +19,25 @@ var app = express()
 // mock数据
 var appData = require("../data.json");
 var goods = appData.goods;
+var seller = appData.seller;
+var ratings = appData.ratings;
 var apiRoutes = express.Router();
 apiRoutes.get('/goods', function (req, res) {
   res.json({
     errno: 0,
     data: goods
+  })
+});
+apiRoutes.get('/ratings', function (req, res) {
+  res.json({
+    errno: 0,
+    data: ratings
+  })
+});
+apiRoutes.get('/seller', function (req, res) {
+  res.json({
+    errno: 0,
+    data: seller
   })
 });
 app.use("/api", apiRoutes);
