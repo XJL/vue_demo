@@ -1,12 +1,18 @@
 <template>
-  <div id="app">
-    <header></header>
-    <div class="tab">
-      我是tab
+  <div>
+    <v-header></v-header>
+    <div class="tab border-1px">
+      <div class="tab-item">
+        <a v-link="{path: '/goods'}">商品</a>
+      </div>
+      <div class="tab-item">
+        <a v-link="{path: '/ratings'}">评价</a>
+      </div>
+      <div class="tab-item">
+        <a v-link="{path: '/seller'}">商家</a>
+      </div>
     </div>
-    <div class="content">
-      我是content
-    </div>
+    <router-view></router-view>
   </div>
 </template>
 
@@ -15,38 +21,24 @@
 
   export default {
     components: {
-      header
+      'v-header': header
     }
   };
 </script>
 
-<style>
-  html {
-    height: 100%;
-  }
+<style lang="stylus" rel="stylesheet/stylus">
+  @import 'common/stylus/mixin';
 
-  body {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 100%;
-  }
-
-  #app {
-    color: #2c3e50;
-    margin-top: -100px;
-    max-width: 600px;
-    font-family: Source Sans Pro, Helvetica, sans-serif;
-    text-align: center;
-  }
-
-  #app a {
-    color: #42b983;
-    text-decoration: none;
-  }
-
-  .logo {
-    width: 100px;
-    height: 100px
-  }
+  .tab
+    display: flex
+    // border-bottom 1px solid rgba(7, 17, 27, 0.1)
+    border-1px(rgba(7, 17, 27, 0.1))
+    .tab-item
+      flex: 1
+      line-height 40px
+      text-align center
+      font-size 14px
+      color: rgb(77, 85, 93)
+      a
+        display: block
 </style>
