@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-header></v-header>
+    <v-header :seller="seller"></v-header>
     <div class="tab border-1px">
       <div class="tab-item">
         <a v-link="{path: '/goods'}">商品</a>
@@ -19,7 +19,21 @@
 <script>
   import header from './components/header/Header.vue';
 
+  const HTTP_OK = 0;
+
   export default {
+    data () {
+      return {
+        seller: {}
+      };
+    },
+    created  () {
+      this.$http.get('/api/seller').then((rsp) => {
+        if (rsp.ok && rsp.body.errno === HTTP_OK) {
+          this.seller = rsp.body.data;
+        }
+      });
+    },
     components: {
       'v-header': header
     }
@@ -33,12 +47,14 @@
     display: flex
     // border-bottom 1px solid rgba(7, 17, 27, 0.1)
     border-1px(rgba(7, 17, 27, 0.1))
+
     .tab-item
       flex: 1
       line-height 40px
       text-align center
       font-size 14px
       color: rgb(77, 85, 93)
+
       a
         display: block
 </style>
