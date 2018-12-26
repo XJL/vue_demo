@@ -97,8 +97,9 @@
 
   .header
     position: relative
-    background: rgba(7, 17, 27, 0.5)
+    height: 134px
     overflow hidden
+    background: rgba(7, 17, 27, 0.5)
 
     .content-wrapper
       padding: 24px 12px 18px 24px
