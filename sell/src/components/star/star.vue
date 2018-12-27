@@ -20,7 +20,7 @@
       }
     },
     computed: {
-      itemClasses () {
+      itemClasses() {
         let arr = [];
         const on = Math.floor(this.score);
         const off = LENGTH - on;
@@ -36,7 +36,7 @@
         }
         return arr;
       },
-      starType () {
+      starType() {
         return 'star-' + this.size;
       }
     }

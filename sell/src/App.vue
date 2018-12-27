@@ -22,12 +22,12 @@
   const HTTP_OK = 0;
 
   export default {
-    data () {
+    data() {
       return {
         seller: {}
       };
     },
-    created  () {
+    created() {
       this.$http.get('/api/seller').then((rsp) => {
         if (rsp.ok && rsp.body.errno === HTTP_OK) {
           this.seller = rsp.body.data;

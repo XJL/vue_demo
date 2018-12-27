@@ -67,21 +67,21 @@
   import star from 'components/star/star';
 
   export default {
-    created () {
+    created() {
       this.classMap = [
         'decrease', 'discount', 'special', 'invoice', 'guarantee'
       ];
     },
     props: ['seller'],
     methods: {
-      showDetail () {
+      showDetail() {
         this.detailShow = true;
       },
-      detailClose () {
+      detailClose() {
         this.detailShow = false;
       }
     },
-    data: function () {
+    data() {
       return {
         detailShow: false
       };
@@ -150,6 +150,7 @@
             width 12px
             height 12px
             background-size 12px 12px
+
             &.decrease
               bg-img('decrease_1')
 
@@ -239,6 +240,7 @@
         height: 100%
         z-index: -1;
         filter: blur(10px)
+
     .detail
       position: fixed
       top: 0
@@ -250,12 +252,15 @@
       overflow auto
       transition: all 0.5s
       backdrop-filter: blur(10px)
+
       &.fade-transition
         opacity: 1
         background: rgba(7, 17, 27, 0.8)
+
       &.fade-enter, &.fade-leave
         opacity: 0
         background: rgba(7, 17, 27, 0.8)
+
       .detail-wrapper
         min-height: 100%
         width: 100%
@@ -263,38 +268,47 @@
         .detail-main
           margin-top: 64px
           padding-bottom: 96px
+
           .name
             font-size 16px
-            color: rgb(255,255,255)
+            color: rgb(255, 255, 255)
             font-weight 700
             line-height 16px
             text-align center
+
           .score
             margin-top: 16px
             text-align: center
+
           .title
             display: flex
             margin: 28px auto 24px auto
             width: 80%
+
             .line
               position: relative
               top: -6px
               flex: 1
               border-bottom 1px solid rgba(255, 255, 255, 0.2)
+
             .text
               margin: 0 12px
               font-size: 18px
               font-weight: 700
               color: rgb(255, 255, 255)
+
           .supports
             width: 80%
             margin: 0 auto
+
             .support-item
               padding: 0 12px
               margin-bottom 12px
               font-size: 0
+
               &:last-child
                 margin-bottom: 0
+
               .icon
                 display: inline-block
                 margin-right 6px
@@ -303,16 +317,22 @@
                 height: 16px
                 background-repeat: no-repeat
                 background-size: 16px 16px
+
                 &.decrease
                   bg-img('decrease_2')
+
                 &.discount
                   bg-img('discount_2')
+
                 &.special
                   bg-img('special_2')
+
                 &.invoice
                   bg-img('invoice_2')
+
                 &.guarantee
                   bg-img('guarantee_2')
+
               .text
                 font-size: 12px
                 color: rgb(255, 255, 255)
@@ -322,11 +342,13 @@
           .bulletin
             width: 80%
             margin: 0 auto
+
             .content
               font-size: 12px
               font-weight: 200
               color: rgb(255, 255, 255)
               line-height: 24px
+
       .detail-close
         position: relative
         margin: -64px auto 0 auto
@@ -334,5 +356,5 @@
         width: 32px
         height: 32px
         font-size 32px
-        color: rgba(255,255,255,0.5)
+        color: rgba(255, 255, 255, 0.5)
 </style>

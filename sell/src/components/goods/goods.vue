@@ -1,18 +1,19 @@
 <template>
   <div class="goods">
-    <div class="menu-wrapper">
+    <div class="menu-wrapper" v-el:menu-wrapper>
       <ul>
-        <li class="menu-item" :class="{active: menuActive === $index}" v-for="item in goods" @click="menuActive=$index">
-          <span class="text" :class="{['border-1px']: ($index !== menuActive) && ($index !== menuActive - 1)}">
+        <li class="menu-item" :class="{active: currentIndex === $index}" v-for="item in goods"
+            @click="selectMenu($index)">
+          <span class="text" :class="{['border-1px']: ($index !== currentIndex) && ($index !== currentIndex - 1)}">
             <i v-show="item.type>0" class="icon" :class="classMap[item.type]"></i>
             {{item.name}}
           </span>
         </li>
       </ul>
     </div>
-    <div class="foods-wrapper">
+    <div class="foods-wrapper" v-el:foods-wrapper>
       <ul>
-        <li class="food-list" v-for="item in goods">
+        <li class="food-list food-list-hook" v-for="item in goods">
           <h1 class="title">{{item.name}}</h1>
           <ul>
             <li class="food-item" v-for="food in item.foods">
@@ -28,12 +29,10 @@
                 </div>
                 <div class="price">
                   <span class="newPrice"><span class="currency">&#165;</span>{{food.price}}</span>
-                  <!--<span class="oldPrice" v-show="food.oldPrice" style="text-decoration:line-through;">&#165;{{food.oldPrice}}</span>-->
-                  <span class="oldPrice" style="text-decoration:line-through;">&#165;12</span>
+                  <span class="oldPrice" v-show="food.oldPrice" style="text-decoration:line-through;">&#165;{{food.oldPrice}}</span>
                 </div>
               </div>
               <div class="counter">
-
               </div>
             </li>
           </ul>
@@ -45,6 +44,8 @@
 </template>
 
 <script type="text/ecmascript-6">
+  import BScroll from 'better-scroll';
+
   const HTTP_OK = 0;
 
   export default {
@@ -53,23 +54,72 @@
         type: Object
       }
     },
-    data () {
+    data() {
       return {
-        menuActive: 0,
-        goods: {}
+        goods: {},
+        listHeight: [],
+        scrollY: 0
       };
     },
-    created () {
+    computed: {
+      currentIndex: {
+        get() {
+          for (let i = 0; i < this.listHeight.length; i++) {
+            let height1 = this.listHeight[i];
+            let height2 = this.listHeight[i + 1];
+            if (!height2 || (this.scrollY >= height1 && this.scrollY < height2)) {
+              return i;
+            }
+          }
+          return 0;
+        },
+        set($index) {
+          this.scrollY = this.listHeight[$index];
+          this.foodsScroll.scrollTo(0, -this.listHeight[$index], 0);
+        }
+      }
+    },
+    created() {
       this.classMap = [
         'decrease', 'discount', 'special', 'invoice', 'guarantee'
       ];
-
       this.$http.get('/api/goods').then((rsp) => {
         if (rsp.ok && (rsp.body.errno === HTTP_OK)) {
           this.goods = rsp.body.data;
-          console.log(rsp.body.data);
+          this.$nextTick(() => {
+            this._initScroll();
+            this._calculateHeight();
+          });
         }
       });
+    },
+    methods: {
+      _initScroll() {
+        this.menuScroll = new BScroll(this.$els.menuWrapper, {
+          click: true
+        });
+        this.foodsScroll = new BScroll(this.$els.foodsWrapper, {
+          click: true,
+          probeType: 3
+        });
+
+        this.foodsScroll.on('scroll', (pos) => {
+          this.scrollY = Math.abs(Math.round(pos.y));
+        });
+      },
+      _calculateHeight() {
+        let foodList = this.$els.foodsWrapper.getElementsByClassName('food-list-hook');
+        let height = 0;
+        this.listHeight.push(height);
+        for (let i = 0; i < foodList.length; i++) {
+          let item = foodList[i];
+          height += item.clientHeight;
+          this.listHeight.push(height);
+        }
+      },
+      selectMenu($index) {
+        this.currentIndex = $index;
+      }
     }
   };
 </script>
@@ -91,17 +141,21 @@
       background: #f3f5f7
       overflow-x: hidden;
       overflow-y: scroll;
+
       &::-webkit-scrollbar {
         display: none;
       }
+
       .menu-item
         display: table
         width: 56px
         height: 54px
         line-height: 14px
         padding: 0 12px
+
         &.active
           background: white
+
         .icon
           display: inline-block
           vertical-align: top
@@ -109,6 +163,7 @@
           width 12px
           height 12px
           background-size 12px 12px
+
           &.decrease
             bg-img('decrease_3')
 
@@ -129,6 +184,7 @@
           vertical-align: middle
           color: rgb(77, 85, 93)
           font-size: 12px
+
           &.border-1px
             border-1px(rgba(7, 17, 27, 0.1))
 
@@ -136,8 +192,10 @@
       flex: 1
       overflow-x: hidden;
       overflow-y: scroll;
+
       &::-webkit-scrollbar
         display: none
+
       .food-list
         .title
           padding: 0 14px
@@ -147,33 +205,38 @@
           color: rgb(147 153, 159)
           border-left: 4px solid #d9dde1
           background: #f3f5f7
+
         .food-item
           display: flex
           margin: 18px
           padding-bottom: 18px
           font-size: 0
           border-1px(rgba(7, 17, 27, 0.1))
+
           &:last-child
             border-none()
-            padding-bottom: 0
+            margin-bottom: 0
 
           .icon
             flex: 0 0 57px
             margin-right: 10px
+
           .content
             flex: 1
             overflow: hidden
+
             .name
               margin: 2px 0 8px 0
               font-size: 14px
               line-height: 14px
               color: rgb(7, 17, 27)
+
             .desc
               width: 100%
               margin-top: 8px
               font-size: 10px
               color: rgb(147, 153, 159)
-              line-height: 10px
+              line-height: 12px
               overflow: hidden
               white-space: nowrap
               text-overflow: ellipsis
@@ -181,26 +244,33 @@
             .extra
               margin-top: 8px
               font-size: 0
+
               span
                 font-size: 10px
                 color: rgb(147, 153, 159)
                 line-height: 10px
-                &+span
+
+                & + span
                   margin-left: 6px
+
             .price
               margin-top: 8px
+
               .newPrice
                 color: rgb(240, 20, 20)
                 font-size: 14px
                 font-weight: 700
+
                 .currency
                   font-size: 10px
                   font-weight: normal
+
               .oldPrice
                 margin-left: 8px
                 color: rgb(147, 153, 159)
                 font-size: 10px
                 font-weight: 700
+
                 .currency
                   font-weight: normal
 </style>
