@@ -39,12 +39,13 @@
         </li>
       </ul>
     </div>
-
+    <shopcart></shopcart>
   </div>
 </template>
 
 <script type="text/ecmascript-6">
   import BScroll from 'better-scroll';
+  import shopcart from 'components/shopcart/shopcart';
 
   const HTTP_OK = 0;
 
@@ -53,6 +54,9 @@
       seller: {
         type: Object
       }
+    },
+    components: {
+      shopcart
     },
     data() {
       return {
@@ -150,6 +154,7 @@
         // 方法2： 使用scrollToElement方法
         let foodList = this.$els.foodsWrapper.getElementsByClassName('food-list-hook');
         let item = foodList[index];
+        // todo: 这里的300会导致左边菜单滚动
         this.foodsScroll.scrollToElement(item, 300);
       }
     }
