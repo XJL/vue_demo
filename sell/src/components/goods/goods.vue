@@ -2,8 +2,8 @@
   <div class="goods">
     <div class="menu-wrapper" v-el:menu-wrapper>
       <ul>
-        <li class="menu-item" :class="{active: currentIndex === $index}" v-for="item in goods"
-            @click="selectMenu($index)">
+        <li class="menu-item menu-item-hook" :class="{active: currentIndex === $index}" v-for="item in goods"
+            @click="selectMenu($index, $event)">
           <span class="text" :class="{['border-1px']: ($index !== currentIndex) && ($index !== currentIndex - 1)}">
             <i v-show="item.type>0" class="icon" :class="classMap[item.type]"></i>
             {{item.name}}
@@ -58,7 +58,10 @@
       return {
         goods: {},
         listHeight: [],
-        scrollY: 0
+        menuHeight: [],
+        menuListHeight: 0,
+        scrollY: 0,
+        menuScrollY: 0
       };
     },
     computed: {
@@ -76,6 +79,11 @@
         set($index) {
           this.scrollY = this.listHeight[$index];
           this.foodsScroll.scrollTo(0, -this.listHeight[$index], 0);
+          if (this.menuHeight[$index] + 54 > this.menuScrollY + this.menuListHeight) {
+            this.menuScroll.scrollTo(0, -(this.menuHeight[$index] + 54 - this.menuListHeight), 0);
+          } else if (this.menuHeight[$index] < this.menuScrollY) {
+            this.menuScroll.scrollTo(0, -this.menuHeight[$index], 0);
+          }
         }
       }
     },
@@ -96,13 +104,17 @@
     methods: {
       _initScroll() {
         this.menuScroll = new BScroll(this.$els.menuWrapper, {
-          click: true
+          click: true,
+          probeType: 3
         });
         this.foodsScroll = new BScroll(this.$els.foodsWrapper, {
           click: true,
           probeType: 3
         });
 
+        this.menuScroll.on('scroll', (pos) => {
+          this.menuScrollY = Math.abs(Math.round(pos.y));
+        });
         this.foodsScroll.on('scroll', (pos) => {
           this.scrollY = Math.abs(Math.round(pos.y));
         });
@@ -116,9 +128,29 @@
           height += item.clientHeight;
           this.listHeight.push(height);
         }
+
+        let menuHeight = 0;
+        this.menuListHeight = this.$els.menuWrapper.clientHeight;
+        let menus = this.$els.menuWrapper.getElementsByClassName('menu-item-hook');
+        this.menuHeight.push(menuHeight);
+        for (let i = 0; i < menus.length; i++) {
+          let item = menus[i];
+          menuHeight += item.clientHeight;
+          this.menuHeight.push(menuHeight);
+        }
       },
-      selectMenu($index) {
-        this.currentIndex = $index;
+      selectMenu(index, event) {
+        if (!event._constructed) { // 当我们自己去指定派发事件的时候这个值为true  浏览器原生点击事件没有这个属性
+          return;
+        }
+
+        // 方法1： 使用scrollTo方法
+        // this.currentIndex = index;
+
+        // 方法2： 使用scrollToElement方法
+        let foodList = this.$els.foodsWrapper.getElementsByClassName('food-list-hook');
+        let item = foodList[index];
+        this.foodsScroll.scrollToElement(item, 300);
       }
     }
   };
