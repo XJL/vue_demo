@@ -31,21 +31,24 @@
                   <span class="newPrice"><span class="currency">&#165;</span>{{food.price}}</span>
                   <span class="oldPrice" v-show="food.oldPrice" style="text-decoration:line-through;">&#165;{{food.oldPrice}}</span>
                 </div>
-              </div>
-              <div class="counter">
+                <div class="cartcontrol-wrapper">
+                  <cartcontrol :food="food"></cartcontrol>
+                </div>
               </div>
             </li>
           </ul>
         </li>
       </ul>
     </div>
-    <shopcart></shopcart>
+    <shopcart v-ref:shopcart :selected-foods="selectedFoods" :delivery-price="seller.deliveryPrice"
+              :min-price="seller.minPrice"></shopcart>
   </div>
 </template>
 
 <script type="text/ecmascript-6">
   import BScroll from 'better-scroll';
   import shopcart from 'components/shopcart/shopcart';
+  import cartcontrol from 'components/cartcontrol/cartcontrol';
 
   const HTTP_OK = 0;
 
@@ -56,11 +59,12 @@
       }
     },
     components: {
-      shopcart
+      shopcart,
+      cartcontrol
     },
     data() {
       return {
-        goods: {},
+        goods: [],
         listHeight: [],
         menuHeight: [],
         menuListHeight: 0,
@@ -89,6 +93,17 @@
             this.menuScroll.scrollTo(0, -this.menuHeight[$index], 0);
           }
         }
+      },
+      selectedFoods() {
+        let foods = [];
+        this.goods.forEach((good) => {
+          good.foods.forEach((food) => {
+            if (food.count) {
+              foods.push(food);
+            }
+          });
+        });
+        return foods;
       }
     },
     created() {
@@ -156,6 +171,17 @@
         let item = foodList[index];
         // todo: 这里的300会导致左边菜单滚动
         this.foodsScroll.scrollToElement(item, 300);
+      },
+      _drop(target) {
+        // 异步调用 优化体验
+        this.$nextTick(() => {
+          this.$refs.shopcart.drop(target);
+        });
+      }
+    },
+    events: {
+      'cart.add'(target) {
+        this._drop(target);
       }
     }
   };
@@ -310,4 +336,9 @@
 
                 .currency
                   font-weight: normal
+
+            .cartcontrol-wrapper
+              position: absolute
+              right: 0
+              bottom: 12px
 </style>
