@@ -32,7 +32,7 @@
                   <span class="oldPrice" v-show="food.oldPrice" style="text-decoration:line-through;">&#165;{{food.oldPrice}}</span>
                 </div>
                 <div class="cartcontrol-wrapper">
-                  <cartcontrol :food="food"></cartcontrol>
+                  <cartcontrol :food="food" :inBScroll="true"></cartcontrol>
                 </div>
               </div>
             </li>
@@ -195,7 +195,7 @@
     position: absolute
     width: 100%
     top: 174px
-    bottom: 64px
+    bottom: 48px
     overflow hidden
 
     .menu-wrapper
@@ -205,9 +205,8 @@
       overflow-x: hidden;
       overflow-y: scroll;
 
-      &::-webkit-scrollbar {
-        display: none;
-      }
+      &::-webkit-scrollbar
+        display: none
 
       .menu-item
         display: table

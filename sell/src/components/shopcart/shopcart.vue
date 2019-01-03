@@ -1,29 +1,55 @@
 <template>
-  <div class="shopcart">
-    <div class="content">
-      <div class="content-left">
-        <div class="logo-wrapper">
-          <div class="logo" :class="{highlight: totalCount>0}">
-            <i class="icon-shopping_cart" :class="{highlight: totalCount>0}"></i>
+  <div>
+    <div class="shopcart">
+      <div class="content" @click="toggleList">
+        <div class="content-left" >
+          <div class="logo-wrapper">
+            <div class="logo" :class="{highlight: totalCount>0}">
+              <i class="icon-shopping_cart" :class="{highlight: totalCount>0}"></i>
+            </div>
+            <div class="num" v-show="totalCount">{{totalCount}}</div>
           </div>
-          <div class="num" v-show="totalCount">{{totalCount}}</div>
+          <div class="price" :class="{highlight: totalCount>0}">&#165;{{totalPrice}}</div>
+          <div class="desc">另需配送费&#165;{{deliveryPrice}}元</div>
         </div>
-        <div class="price" :class="{highlight: totalCount>0}">&#165;{{totalPrice}}</div>
-        <div class="desc">另需配送费&#165;{{deliveryPrice}}元</div>
+        <!-- .stop防止点击事件冒泡 -->
+        <div class="content-right" @click.stop.prevent="pay">
+          <div class="pay" :class="payClass">{{payDesc}}</div>
+        </div>
       </div>
-      <div class="content-right">
-        <div class="pay" :class="payClass">{{payDesc}}</div>
+      <div class="ball-container">
+        <div v-for="ball in balls" v-show="ball.show" transition="drop" class="ball">
+          <div class="inner inner-hook"></div>
+        </div>
+      </div>
+      <div class="shopcart-list" v-show="listShow" transition="fold">
+        <div class="list-header">
+          <div class="title">购物车</div>
+          <div class="empty" @click="clear">清空</div>
+        </div>
+        <div class="list-content">
+          <ul>
+            <li class="food border-1px" v-for="food in selectedFoods">
+              <span class="name">{{food.name}}</span>
+              <div class="price">
+                <span class="currency">￥</span>
+                <span class="text">{{food.price*food.count}}</span>
+              </div>
+              <div class="cartcontrol-wrapper">
+                <cartcontrol :food="food"></cartcontrol>
+              </div>
+            </li>
+          </ul>
+        </div>
       </div>
     </div>
-    <div class="ball-container">
-      <div v-for="ball in balls" v-show="ball.show" transition="drop" class="ball">
-        <div class="inner inner-hook"></div>
-      </div>
-    </div>
+    <div class="mask" v-show="listShow" transition="fade" @click="hideList"></div>
   </div>
 </template>
 
 <script type="text/ecmascript-6">
+  import cartcontrol from 'components/cartcontrol/cartcontrol';
+
   export default {
     props: {
       selectedFoods: {
@@ -50,8 +76,12 @@
           {show: false, showing: false},
           {show: false, showing: false}
         ],
-        dropBalls: []
+        dropBalls: [],
+        fold: false
       };
+    },
+    components: {
+      cartcontrol
     },
     computed: {
       totalPrice() {
@@ -79,6 +109,14 @@
       },
       payClass() {
         return this.totalPrice < this.minPrice ? 'not-enough' : 'enough';
+      },
+      listShow() {
+        if (!this.totalCount) {
+          this.fold = true;
+          return false;
+        } else {
+          return !this.fold;
+        }
       }
     },
     methods: {
@@ -92,6 +130,27 @@
             return;
           }
         }
+      },
+      toggleList() {
+        if (!this.totalCount) {
+          return;
+        } else {
+          this.fold = !this.fold;
+        }
+      },
+      clear() {
+        this.selectedFoods.forEach((food) => {
+          food.count = 0;
+        });
+      },
+      hideList() {
+        this.fold = true;
+      },
+      pay() {
+        if (this.totalPrice < this.minPrice) {
+          return;
+        }
+        window.alert(`支付${this.totalPrice}元`);
       }
     },
     transitions: {
@@ -142,6 +201,8 @@
 </script>
 
 <style lang="stylus" rel="stylesheet/stylus">
+  @import "../../common/stylus/mixin.styl";
+
   .shopcart
     position: fixed
     left: 0
@@ -265,12 +326,103 @@
         z-index: 200
 
         &.drop-transition
-          transition: all 1s cubic-bezier(0.49, -0.29, 0.75, 0.41)
+          transition: all 0.4s cubic-bezier(0.49, -0.29, 0.75, 0.41)
 
           .inner
             width: 16px
             height: 16px
             border-radius: 50%
             background: rgb(0, 160, 220)
-            transition: all 1s linear
+            transition: all 0.4s linear
+
+    .shopcart-list
+      position: absolute
+      top: 0
+      left: 0
+      width: 100%
+      z-index: -1
+
+      &.fold-transition
+        transition: all 0.1s
+        transform: translate3d(0, -100%, 0)
+
+      &.fold-enter, &.fold-leave
+        transform: translate3d(0, 0, 0)
+
+      .list-header
+        height: 40px
+        line-height: 40px
+        padding: 0 18px
+        background: #f3f5f7
+        border-bottom: 1px solid rgba(7, 17, 27, 0.1)
+
+        .title
+          float: left
+          font-size: 14px
+          color: rgb(7, 17, 27)
+          font-weight: 200
+
+        .empty
+          float: right
+          font-size: 12px
+          color: rgb(0, 160, 220)
+
+      .list-content
+        padding: 0 18px
+        background: #fff
+        max-height: 217px
+        overflow: scroll
+
+        &::-webkit-scrollbar
+          display: none
+
+        .food
+          position: relative
+          height: 48px
+          padding: 12px 0
+          box-sizing: border-box
+          border-1px(rgba(7, 17, 27, 0.1))
+          font-size: 0
+
+          .name
+            position: absolute
+            left: 0
+            font-size: 14px
+            color: rgb(7, 17, 27)
+            line-height: 24px
+
+          .price
+            position: absolute
+            right: 96px
+            color: rgb(240, 20, 20)
+            line-height: 24px
+            font-size: 0
+
+            .text
+              font-size: 12px
+
+            .currency
+              font-size: 10px
+
+          .cartcontrol-wrapper
+            position: absolute
+            right: 0
+            top: 6px
+
+  .mask
+    position: fixed
+    top: 0
+    left: 0
+    width: 100%
+    height: 100%
+    z-index: 40
+    backdrop-filter: blur(10px)
+
+    &.fade-transition
+      opacity: 1
+      background: rgba(7, 17, 27, 0.6)
+
+    &.fade-enter, &.fade-leave
+      opacity: 0
+      background: rgba(7, 17, 27, 0.6)
 </style>

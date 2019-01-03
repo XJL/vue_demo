@@ -16,13 +16,14 @@
       food: {
         type: Object
       },
-      selectFoods: {
-        type: Array
+      inScroll: {
+        type: Boolean,
+        default: false
       }
     },
     methods: {
       addCart(event) {
-        if (!event._constructed) { // 当我们自己去指定派发事件的时候这个值为true  浏览器原生点击事件没有这个属性
+        if (this.inScroll && !event._constructed) { // 当我们自己去指定派发事件的时候这个值为true  浏览器原生点击事件没有这个属性
           return;
         }
         if (!this.food.count) {
@@ -36,7 +37,7 @@
         this.$dispatch('cart.add', event.target);
       },
       descreaseCart(event) {
-        if (!event._constructed) { // 当我们自己去指定派发事件的时候这个值为true  浏览器原生点击事件没有这个属性
+        if (this.inScroll && !event._constructed) { // 当我们自己去指定派发事件的时候这个值为true  浏览器原生点击事件没有这个属性
           return;
         }
         if (this.food.count) {
@@ -79,8 +80,10 @@
     .cart-count
       display: inline-block
       vertical-align: top
+      width: 12px
       line-height: 36px
       font-size: 10px
+      text-align: center
       color: rgb(147, 153, 159)
       transition: all 0.2s linear
 
