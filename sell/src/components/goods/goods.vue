@@ -16,7 +16,7 @@
         <li class="food-list food-list-hook" v-for="item in goods">
           <h1 class="title">{{item.name}}</h1>
           <ul>
-            <li class="food-item" v-for="food in item.foods">
+            <li class="food-item" v-for="food in item.foods" @click="_showFood(food, $event)">
               <div class="icon">
                 <img :src="food.icon" width="57" height="57">
               </div>
@@ -40,6 +40,7 @@
         </li>
       </ul>
     </div>
+    <food :food="selectedFood" v-ref:food></food>
     <shopcart v-ref:shopcart :selected-foods="selectedFoods" :delivery-price="seller.deliveryPrice"
               :min-price="seller.minPrice"></shopcart>
   </div>
@@ -49,6 +50,7 @@
   import BScroll from 'better-scroll';
   import shopcart from 'components/shopcart/shopcart';
   import cartcontrol from 'components/cartcontrol/cartcontrol';
+  import food from 'components/food/food';
 
   const HTTP_OK = 0;
 
@@ -60,7 +62,8 @@
     },
     components: {
       shopcart,
-      cartcontrol
+      cartcontrol,
+      food
     },
     data() {
       return {
@@ -69,7 +72,8 @@
         menuHeight: [],
         menuListHeight: 0,
         scrollY: 0,
-        menuScrollY: 0
+        menuScrollY: 0,
+        selectedFood: {}
       };
     },
     computed: {
@@ -177,6 +181,13 @@
         this.$nextTick(() => {
           this.$refs.shopcart.drop(target);
         });
+      },
+      _showFood(food, event) {
+        if (!event._constructed) { // 当我们自己去指定派发事件的时候这个值为true  浏览器原生点击事件没有这个属性
+          return;
+        }
+        this.selectedFood = food;
+        this.$refs.food.show();
       }
     },
     events: {
@@ -248,7 +259,7 @@
           font-size: 12px
 
           &.border-1px
-            border-1px(rgba(7, 17, 27, 0.1))
+            border-bottom-1px(rgba(7, 17, 27, 0.1))
 
     .foods-wrapper
       flex: 1
@@ -273,7 +284,7 @@
           margin: 18px
           padding-bottom: 18px
           font-size: 0
-          border-1px(rgba(7, 17, 27, 0.1))
+          border-bottom-1px(rgba(7, 17, 27, 0.1))
 
           &:last-child
             border-none()
@@ -340,4 +351,10 @@
               position: absolute
               right: 0
               bottom: 12px
+    .detail-wrapper
+      position: fixed
+      top: 0
+      left: 0
+      bottom: 48px
+      background: #fff
 </style>
