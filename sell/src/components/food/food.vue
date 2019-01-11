@@ -32,9 +32,9 @@
       <div class="filter border-1px">
         <div class="title">商品评价</div>
         <div class="words">
-          <span class="all">全部</span>
-          <span class="recommend">推荐</span>
-          <span class="debase">吐槽</span>
+          <span class="all">全部 {{food.ratings.length}}</span>
+          <span class="recommend">推荐 {{recommendedCount}}</span>
+          <span class="debase">吐槽 {{notRecommendedCount}}</span>
         </div>
         <div class="types">
           <i class="icon-check_circle" :class="{active: showOnly}" @click="_showOnly"></i>
@@ -43,17 +43,17 @@
       </div>
       <div class="list">
         <ul>
-          <li class="item" v-for="item in food.ratings">
+          <li class="item border-1px" v-for="item in ratingList">
             <div class="top">
-              <div class="time">{{item.rateTime}}</div>
+              <div class="time">{{item.rateTime | date}}</div>
               <div class="user">
                 <span class="text">{{item.username}}</span>
                 <img class="avatar" :src="item.avatar">
               </div>
             </div>
             <div class="bottom">
-              <span class="thumb" :class="thumb"></span>
-              <span class="content">{{item.text}}</span>
+              <span class="thumb" :class="item.rateType | rate"></span>
+              <span class="content">{{item.text | rating}}</span>
             </div>
           </li>
         </ul>
@@ -65,6 +65,12 @@
 <script type="text/ecmascript-6">
   import cartcontrol from 'components/cartcontrol/cartcontrol';
   import Vue from 'vue';
+
+  // 最好不要在这里用全局过滤器 改用局部过滤器
+  // Vue.filter('date', (date) => {
+  //   date = new Date(date);
+  //   return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()} ${date.getHours()}:${date.getMinutes()}`;
+  // });
 
   export default {
     props: {
@@ -84,6 +90,25 @@
     computed: {
       thumb() {
         return this.food.thumb ? 'icon-thumb_up' : 'icon-thumb_down';
+      },
+      recommendedCount() {
+        let count = 0;
+        this.food.ratings.forEach(v => v.rateType && count++);
+        return count;
+      },
+      notRecommendedCount() {
+        let count = 0;
+        this.food.ratings.forEach(v => !v.rateType && count++);
+        return count;
+      },
+      ratingList() {
+        if (this.showOnly) {
+          const list = [];
+          this.food.ratings.forEach(v => !!v.text && list.push(v));
+          return list;
+        } else {
+          return this.food.ratings;
+        }
       }
     },
     methods: {
@@ -102,6 +127,19 @@
       },
       _showOnly() {
         this.showOnly = !this.showOnly;
+      }
+    },
+    // 局部过滤器
+    filters: {
+      date(date) {
+        date = new Date(date);
+        return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()} ${date.getHours()}:${date.getMinutes()}`;
+      },
+      rating(text) {
+        return text || '用户没有评论';
+      },
+      rate(rateType) {
+        return rateType ? 'icon-thumb_up' : 'icon-thumb_down';
       }
     }
   };
@@ -309,23 +347,34 @@
 
       .list
         padding: 0 18px
+
         .item
           width: 100%
           padding: 16px 0
+          margin-bottom: 20px
+          border-bottom-1px(rgba(7, 17, 27, 0.1))
+
+          &:last-child
+            border-none()
+
           .top
             display: inline-block
             width: 100%
             line-height: 12px
+
             .time
               float: left;
               font-size: 10px
               color: rgb(147, 153, 159)
+
             .user
               float: right;
+
               .text
                 vertical-align: top
                 font-size: 10px
-                color:  rgb(147, 153, 159)
+                color: rgb(147, 153, 159)
+
               .avatar
                 vertical-align: top
                 width: 12px
@@ -337,8 +386,15 @@
             .thumb
               vertical-align: top
               font-size: 12px
-              color: rgb(147, 153, 159)
               line-height: 24px
+
+              &.icon-thumb_up
+                color: rgb(0, 160, 220)
+
+              &.icon-thumb_down
+                color: rgb(147, 153, 159)
+
+
             .content
               font-size: 12px
               color: rgb(7, 17, 27)
